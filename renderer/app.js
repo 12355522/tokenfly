@@ -22,6 +22,18 @@ function fmtModel(m) {
   return m.replace('claude-', '').replace('sonnet', 'S').replace('opus', 'O').replace('haiku', 'H').replace(/-(\d)/g, '$1').toUpperCase();
 }
 
+// 收合模式用的短格式：同日只顯示時間，跨日顯示 M/D HH:MM
+function fmtResetShort(isoStr) {
+  if (!isoStr) return null;
+  try {
+    const d = new Date(isoStr);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    return sameDay ? time : `${d.getMonth() + 1}/${d.getDate()} ${time}`;
+  } catch (_) { return null; }
+}
+
 function fmtDuration(minutes) {
   if (minutes < 1) return t('lt1min');
   if (minutes < 60) return `${minutes} ${t('minutes')}`;
@@ -62,9 +74,11 @@ function renderStats(data) {
   const model = session?.model || today?.model || 'unknown';
   modelBadge.textContent = fmtModel(model);
 
-  // Compact bar: session usage% or cost
+  // 收合模式：顯示 % 與重置時間，例如 「64% · 01:19」
   if (usage?.session?.usedPercent != null) {
-    compactInfo.textContent = `${Math.round(usage.session.usedPercent)}% ${t('used')}`;
+    const pct = Math.round(usage.session.usedPercent);
+    const resetShort = fmtResetShort(usage.session.resetsAtRaw);
+    compactInfo.textContent = resetShort ? `${pct}% · ↺${resetShort}` : `${pct}% ${t('used')}`;
   } else {
     compactInfo.textContent = session ? fmtCost(session.cost) : '–';
   }
