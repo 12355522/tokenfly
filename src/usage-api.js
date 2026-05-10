@@ -9,7 +9,9 @@ const fs = require('fs');
 // Cache: avoid hitting the API too often
 let _cache = null;
 let _cacheTime = 0;
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+let _rateLimitedUntil = 0;        // 429 退避：此時間前不再呼叫 API
+const CACHE_TTL_MS   = 5 * 60 * 1000;  // 5 分鐘正常快取
+const RATE_LIMIT_BACKOFF_MS = 10 * 60 * 1000; // 429 後等 10 分鐘
 
 function getOAuthToken() {
   // 1. Try macOS Keychain (primary)
@@ -66,6 +68,7 @@ function httpsGet(token) {
 
     const req = https.request(options, (res) => {
       if (res.statusCode === 401) { reject(new Error('401')); return; }
+      if (res.statusCode === 429) { reject(new Error('429')); return; }
       let data = '';
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {
@@ -94,13 +97,20 @@ function parseResetTime(isoStr) {
 }
 
 async function fetchUsageData() {
-  // Return cached value if fresh
-  if (_cache && Date.now() - _cacheTime < CACHE_TTL_MS) {
+  const now = Date.now();
+
+  // 快取未過期 → 直接回傳
+  if (_cache && now - _cacheTime < CACHE_TTL_MS) {
+    return _cache;
+  }
+
+  // 429 退避中 → 回傳舊快取（即使過期），避免繼續被擋
+  if (now < _rateLimitedUntil) {
     return _cache;
   }
 
   const auth = getOAuthToken();
-  if (!auth?.token) return null;
+  if (!auth?.token) return _cache;
 
   try {
     const raw = await httpsGet(auth.token);
@@ -128,15 +138,21 @@ async function fetchUsageData() {
 
     _cache = result;
     _cacheTime = Date.now();
+    _rateLimitedUntil = 0;
     return result;
-  } catch (_) {
-    return null;
+  } catch (err) {
+    if (err.message === '429') {
+      // 被速率限制：設定退避，回傳舊快取
+      _rateLimitedUntil = Date.now() + RATE_LIMIT_BACKOFF_MS;
+    }
+    return _cache; // 失敗時回傳上次的快取，而不是 null
   }
 }
 
 function clearCache() {
   _cache = null;
   _cacheTime = 0;
+  // 不重置 _rateLimitedUntil，避免退避期間被繞過
 }
 
 module.exports = { fetchUsageData, clearCache };
