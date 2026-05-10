@@ -8,27 +8,11 @@
 
 ## 畫面預覽
 
-```
-┌─────────────────────────────────┐
-│ ● Tokenfly     S46  ▾  ✕       │
-├─────────────────────────────────┤
-│ 使用限制  Session  本月          │
-├─────────────────────────────────┤
-│ Current session                 │
-│ 376 訊息          64%           │
-│ ██████████████░░░░░░░           │
-│ 重置: 5/11 上午01:19            │
-│ ↑ 62.3K in  ↓ 24.1K out  ...  │
-│ ─────────────────────────────── │
-│ Weekly limits                   │
-│ 重置: 5/16 上午11:00            │
-│ 3 sessions  439 訊息    22%    │
-│ █████░░░░░░░░░░░░░░░           │
-│ ─────────────────────────────── │
-│ 今日費用                         │
-│ 439 訊息  86.4K tokens $15.06  │
-└─────────────────────────────────┘
-```
+<p align="center">
+  <img src="img/0.png" width="300" alt="使用限制面板" />
+  <img src="img/1.png" width="300" alt="Session 面板" />
+  <img src="img/2.png" width="300" alt="本月面板" />
+</p>
 
 ---
 
@@ -85,7 +69,7 @@ npm start
 
 ## 資料來源說明
 
-Float Token 使用兩個資料來源：
+Tokenfly 使用兩個資料來源：
 
 ### 1. Anthropic OAuth API（真實使用率）
 呼叫 `https://api.anthropic.com/api/oauth/usage`，取得與 `/usage` 指令完全相同的資料：
@@ -102,7 +86,7 @@ OAuth Token 從 **macOS Keychain**（服務名稱：`Claude Code-credentials`）
 ## 專案結構
 
 ```
-float-token/
+tokenfly/
 ├── main.js              # Electron 主程序
 ├── preload.js           # 安全橋接（contextBridge）
 ├── scripts/
