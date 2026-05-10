@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code project settings (contains local permissions, not needed in repo)
+.claude/
+
+# Electron build output
+dist/
+out/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+electron-builder.env
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# macOS Keychain / credential files (never commit these)
+.credentials.json
+*.credentials.json
+
+# Temp / cache
+.cache/
+*.tmp
+
+# IDE
+.vscode/settings.json
+.idea/

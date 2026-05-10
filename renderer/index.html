@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Float Token</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Title Bar -->
+    <div id="titlebar">
+      <div id="titlebar-left">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="title-text">Float Token</span>
+        <span id="model-badge">–</span>
+      </div>
+      <div id="titlebar-right">
+        <span id="compact-info">–</span>
+        <button class="tb-btn" id="btn-toggle" title="展開/收合">▾</button>
+        <button class="tb-btn" id="btn-close" title="隱藏">✕</button>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div id="tabs">
+      <button class="tab active" data-tab="limits">使用限制</button>
+      <button class="tab" data-tab="session">Session</button>
+      <button class="tab" data-tab="month">本月</button>
+    </div>
+
+    <!-- Content -->
+    <div id="content">
+
+      <!-- Limits Panel (like the screenshot) -->
+      <div class="panel active" id="panel-limits">
+        <div class="limits-section">
+          <div class="limits-title">Current session</div>
+          <div class="limits-row">
+            <div class="limits-meta">
+              <span class="limits-sub" id="lim-session-msgs">– 訊息</span>
+              <span class="limits-reset" id="lim-session-duration">–</span>
+            </div>
+            <div class="limits-pct" id="lim-session-pct">–</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill blue" id="lim-session-bar" style="width:0%"></div>
+          </div>
+          <div class="limits-tokens" id="lim-session-tokens">–</div>
+        </div>
+
+        <div class="limits-divider"></div>
+
+        <div class="limits-section">
+          <div class="limits-title-row">
+            <span class="limits-title">Weekly limits</span>
+            <span class="limits-plan" id="lim-week-reset">重置於 Sat 11:00</span>
+          </div>
+          <div class="limits-row">
+            <div class="limits-meta">
+              <span class="limits-sub">All models</span>
+              <span class="limits-reset" id="lim-week-msgs">–</span>
+            </div>
+            <div class="limits-pct" id="lim-week-pct">–</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill blue" id="lim-week-bar" style="width:0%"></div>
+          </div>
+          <div class="limits-tokens" id="lim-week-tokens">–</div>
+        </div>
+
+        <div class="limits-divider"></div>
+
+        <div class="limits-section">
+          <div class="limits-title-row">
+            <span class="limits-title">今日費用</span>
+          </div>
+          <div class="limits-row">
+            <div class="limits-meta">
+              <span class="limits-sub" id="lim-today-msgs">–</span>
+            </div>
+            <div class="cost-big" id="lim-today-cost">–</div>
+          </div>
+          <div class="limits-tokens" id="lim-today-tokens">–</div>
+        </div>
+      </div>
+
+      <!-- Session Panel (token details) -->
+      <div class="panel" id="panel-session">
+        <div class="cost-card">
+          <div>
+            <div class="cost-label">Session Cost</div>
+            <div class="cost-main" id="s-cost">–</div>
+            <div class="cost-msgs" id="s-msgs">0 訊息</div>
+          </div>
+          <div class="cost-detail">
+            <div class="cost-label">Total Tokens</div>
+            <div class="cost-msgs" id="s-total-tokens">–</div>
+          </div>
+        </div>
+        <div class="token-row">
+          <div class="token-chip in"><div class="label">Input</div><div class="val" id="s-input">–</div></div>
+          <div class="token-chip out"><div class="label">Output</div><div class="val" id="s-output">–</div></div>
+          <div class="token-chip cw"><div class="label">Cache W</div><div class="val" id="s-cache-w">–</div></div>
+          <div class="token-chip cr"><div class="label">Cache R</div><div class="val" id="s-cache-r">–</div></div>
+        </div>
+      </div>
+
+      <!-- Month Panel -->
+      <div class="panel" id="panel-month">
+        <div class="cost-card">
+          <div>
+            <div class="cost-label">本月費用</div>
+            <div class="cost-main" id="m-cost">–</div>
+            <div class="cost-msgs" id="m-msgs">0 訊息</div>
+          </div>
+          <div class="cost-detail">
+            <div class="cost-label">Total Tokens</div>
+            <div class="cost-msgs" id="m-total-tokens">–</div>
+          </div>
+        </div>
+        <div class="token-row">
+          <div class="token-chip in"><div class="label">Input</div><div class="val" id="m-input">–</div></div>
+          <div class="token-chip out"><div class="label">Output</div><div class="val" id="m-output">–</div></div>
+          <div class="token-chip cw"><div class="label">Cache W</div><div class="val" id="m-cache-w">–</div></div>
+          <div class="token-chip cr"><div class="label">Cache R</div><div class="val" id="m-cache-r">–</div></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /app -->
+
+  <script src="app.js"></script>
+</body>
+</html>
