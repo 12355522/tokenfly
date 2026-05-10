@@ -1,5 +1,5 @@
 {
-  "name": "float-token",
+  "name": "tokenfly",
   "version": "1.0.0",
   "description": "Claude Code token usage floating window for Mac & Windows",
   "main": "main.js",
@@ -17,8 +17,8 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.gevsi.float-token",
-    "productName": "Float Token",
+    "appId": "com.gevsi.tokenfly",
+    "productName": "Tokenfly",
     "files": [
       "main.js",
       "preload.js",

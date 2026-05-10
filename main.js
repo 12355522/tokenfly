@@ -45,7 +45,7 @@ function createTray() {
     : nativeImage.createEmpty();
 
   tray = new Tray(trayIcon);
-  tray.setToolTip('Float Token - Claude Code 使用統計');
+  tray.setToolTip('Tokenfly - Claude Code 使用統計');
 
   const contextMenu = Menu.buildFromTemplate([
     {

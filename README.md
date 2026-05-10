@@ -1,4 +1,4 @@
-# Float Token
+# Tokenfly
 
 一個為 Claude Code 設計的浮動視窗，即時顯示 Token 使用量、費用與使用限制。
 
@@ -10,7 +10,7 @@
 
 ```
 ┌─────────────────────────────────┐
-│ ● Float Token  S46  ▾  ✕       │
+│ ● Tokenfly     S46  ▾  ✕       │
 ├─────────────────────────────────┤
 │ 使用限制  Session  本月          │
 ├─────────────────────────────────┤
@@ -72,8 +72,8 @@
 ## 安裝與執行
 
 ```bash
-git clone https://github.com/your-username/float-token.git
-cd float-token
+git clone https://github.com/your-username/tokenfly.git
+cd tokenfly
 npm install
 npm start
 ```
