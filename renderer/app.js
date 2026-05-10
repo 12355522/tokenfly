@@ -23,10 +23,10 @@ function fmtModel(m) {
 }
 
 function fmtDuration(minutes) {
-  if (minutes < 1) return '< 1 分鐘';
-  if (minutes < 60) return `${minutes} 分鐘`;
+  if (minutes < 1) return t('lt1min');
+  if (minutes < 60) return `${minutes} ${t('minutes')}`;
   const h = Math.floor(minutes / 60), m = minutes % 60;
-  return m > 0 ? `${h} 時 ${m} 分` : `${h} 小時`;
+  return m > 0 ? `${h} ${t('hour_unit')} ${m} ${t('min_unit')}` : `${h} ${t('hours')}`;
 }
 
 function setBar(id, pct, color) {
@@ -47,11 +47,15 @@ const modelBadge = document.getElementById('model-badge');
 const compactInfo = document.getElementById('compact-info');
 const btnToggle = document.getElementById('btn-toggle');
 const btnClose = document.getElementById('btn-close');
+const btnLang = document.getElementById('btn-lang');
 
 // ── Render ─────────────────────────────────────────────────────────────────────
 
+let _lastData = null;
+
 function renderStats(data) {
   if (!data) return;
+  _lastData = data;
   const { session, today, week, month, cache, usage } = data;
 
   // Model badge
@@ -60,21 +64,20 @@ function renderStats(data) {
 
   // Compact bar: session usage% or cost
   if (usage?.session?.usedPercent != null) {
-    compactInfo.textContent = `${Math.round(usage.session.usedPercent)}% used`;
+    compactInfo.textContent = `${Math.round(usage.session.usedPercent)}% ${t('used')}`;
   } else {
     compactInfo.textContent = session ? fmtCost(session.cost) : '–';
   }
 
   // ─── LIMITS PANEL ─────────────────────────────────────────────────────
 
-  // Current session row — use real API usage% if available
   const sessionApiPct = usage?.session?.usedPercent ?? null;
   const sessionApiReset = usage?.session?.resetsAt ?? null;
 
   if (session || sessionApiPct != null) {
     if (session) {
-      setText('lim-session-msgs', `${session.messages || 0} 訊息`);
-      setText('lim-session-duration', `持續 ${fmtDuration(session.sessionDurationMin || 0)}`);
+      setText('lim-session-msgs', `${session.messages || 0} ${t('msgs')}`);
+      setText('lim-session-duration', `${t('active')} ${fmtDuration(session.sessionDurationMin || 0)}`);
       setText('lim-session-tokens', `↑ ${fmtTokens(session.input)} in  ↓ ${fmtTokens(session.output)} out  ${fmtTokens(session.cacheRead)} cached`);
     }
 
@@ -82,16 +85,15 @@ function renderStats(data) {
       const pct = Math.round(sessionApiPct);
       setText('lim-session-pct', `${pct}%`);
       setBar('lim-session-bar', pct, 'blue');
-      if (sessionApiReset) setText('lim-session-duration', `重置: ${sessionApiReset}`);
+      if (sessionApiReset) setText('lim-session-duration', `${t('reset')}: ${sessionApiReset}`);
     } else if (session) {
       const todayMsgs = today?.messages || session.messages;
       const sessionBar = todayMsgs > 0 ? Math.round((session.messages / todayMsgs) * 100) : 50;
-      setText('lim-session-pct', `${session.messages} 訊息`);
+      setText('lim-session-pct', `${session.messages} ${t('msgs')}`);
       setBar('lim-session-bar', sessionBar, 'blue');
     }
   }
 
-  // Weekly row — use real API usage% if available
   const weekApiPct = usage?.weekly?.usedPercent ?? null;
   const weekApiReset = usage?.weekly?.resetsAt ?? null;
 
@@ -99,8 +101,9 @@ function renderStats(data) {
     if (week) {
       const weekCost = fmtCost(week.cost);
       const sessions = cache?.weekSessions || '–';
-      setText('lim-week-msgs', `${sessions} sessions  ${week.messages} 訊息`);
-      const avgNote = (cache && cache.avgWeekMessages > 0) ? `  |  平均 ${cache.avgWeekMessages}/週` : '';
+      setText('lim-week-msgs', `${sessions} ${t('sessions')}  ${week.messages} ${t('msgs')}`);
+      const avgNote = (cache && cache.avgWeekMessages > 0)
+        ? `  |  ${t('avg')} ${cache.avgWeekMessages}${t('per_week')}` : '';
       setText('lim-week-tokens', `${fmtTokens((week.input||0)+(week.output||0)+(week.cacheRead||0))} tokens  ${weekCost}${avgNote}`);
     }
 
@@ -108,19 +111,18 @@ function renderStats(data) {
       const pct = Math.round(weekApiPct);
       setText('lim-week-pct', `${pct}%`);
       setBar('lim-week-bar', pct, 'blue');
-      if (weekApiReset) setText('lim-week-reset', `重置: ${weekApiReset}`);
+      if (weekApiReset) setText('lim-week-reset', `${t('reset')}: ${weekApiReset}`);
     } else if (week) {
       const avgRef = (cache && cache.avgWeekMessages > 0) ? cache.avgWeekMessages : week.messages;
       const weekPct = avgRef > 0 ? Math.min(100, Math.round((week.messages / avgRef) * 100)) : 50;
       setText('lim-week-pct', `${weekPct}%`);
-      if (cache?.nextSatStr) setText('lim-week-reset', `重置: ${cache.nextSatStr}`);
+      if (cache?.nextSatStr) setText('lim-week-reset', `${t('reset')}: ${cache.nextSatStr}`);
       setBar('lim-week-bar', weekPct, 'blue');
     }
   }
 
-  // Today cost row
   if (today) {
-    setText('lim-today-msgs', `${today.messages} 訊息  ${fmtTokens((today.input||0)+(today.output||0)+(today.cacheWrite||0)+(today.cacheRead||0))} tokens`);
+    setText('lim-today-msgs', `${today.messages} ${t('msgs')}  ${fmtTokens((today.input||0)+(today.output||0)+(today.cacheWrite||0)+(today.cacheRead||0))} tokens`);
     setText('lim-today-cost', fmtCost(today.cost));
     setText('lim-today-tokens', `↑ ${fmtTokens(today.input)} in  ↓ ${fmtTokens(today.output)} out  ${fmtTokens(today.cacheRead)} cached`);
   }
@@ -128,7 +130,7 @@ function renderStats(data) {
   // ─── SESSION PANEL ────────────────────────────────────────────────────
   if (session) {
     setText('s-cost', fmtCost(session.cost));
-    setText('s-msgs', `${session.messages || 0} 訊息`);
+    setText('s-msgs', `${session.messages || 0} ${t('msgs')}`);
     const total = (session.input||0)+(session.output||0)+(session.cacheWrite||0)+(session.cacheRead||0);
     setText('s-total-tokens', fmtTokens(total));
     setText('s-input', fmtTokens(session.input));
@@ -140,7 +142,7 @@ function renderStats(data) {
   // ─── MONTH PANEL ─────────────────────────────────────────────────────
   if (month) {
     setText('m-cost', fmtCost(month.cost));
-    setText('m-msgs', `${month.messages || 0} 訊息`);
+    setText('m-msgs', `${month.messages || 0} ${t('msgs')}`);
     const total = (month.input||0)+(month.output||0)+(month.cacheWrite||0)+(month.cacheRead||0);
     setText('m-total-tokens', fmtTokens(total));
     setText('m-input', fmtTokens(month.input));
@@ -163,6 +165,12 @@ function switchTab(tab) {
 }
 document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
+// ── Language ──────────────────────────────────────────────────────────────────
+btnLang.addEventListener('click', () => {
+  cycleLang();
+  if (_lastData) renderStats(_lastData);
+});
+
 // ── Compact Toggle ────────────────────────────────────────────────────────────
 function setCompact(compact) {
   isCompact = compact;
@@ -176,6 +184,7 @@ document.getElementById('titlebar').addEventListener('dblclick', () => setCompac
 // ── Close ─────────────────────────────────────────────────────────────────────
 btnClose.addEventListener('click', () => window.claude.close());
 
-// ── Data ──────────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
+applyI18n();
 window.claude.onStatsUpdate(data => renderStats(data));
 window.claude.getStats().then(data => { if (data && !data.error) renderStats(data); });

@@ -19,28 +19,29 @@
       </div>
       <div id="titlebar-right">
         <span id="compact-info">–</span>
-        <button class="tb-btn" id="btn-toggle" title="展開/收合">▾</button>
-        <button class="tb-btn" id="btn-close" title="隱藏">✕</button>
+        <button class="tb-btn tb-btn-lang" id="btn-lang" data-i18n-title="lang_title" title="切換語言">繁</button>
+        <button class="tb-btn" id="btn-toggle" data-i18n-title="toggle_title" title="展開/收合">▾</button>
+        <button class="tb-btn" id="btn-close" data-i18n-title="close_title" title="隱藏">✕</button>
       </div>
     </div>
 
     <!-- Tab Bar -->
     <div id="tabs">
-      <button class="tab active" data-tab="limits">使用限制</button>
-      <button class="tab" data-tab="session">Session</button>
-      <button class="tab" data-tab="month">本月</button>
+      <button class="tab active" data-tab="limits" data-i18n="tab_limits">使用限制</button>
+      <button class="tab" data-tab="session" data-i18n="tab_session">Session</button>
+      <button class="tab" data-tab="month" data-i18n="tab_month">本月</button>
     </div>
 
     <!-- Content -->
     <div id="content">
 
-      <!-- Limits Panel (like the screenshot) -->
+      <!-- Limits Panel -->
       <div class="panel active" id="panel-limits">
         <div class="limits-section">
-          <div class="limits-title">Current session</div>
+          <div class="limits-title" data-i18n="current_session">Current session</div>
           <div class="limits-row">
             <div class="limits-meta">
-              <span class="limits-sub" id="lim-session-msgs">– 訊息</span>
+              <span class="limits-sub" id="lim-session-msgs">–</span>
               <span class="limits-reset" id="lim-session-duration">–</span>
             </div>
             <div class="limits-pct" id="lim-session-pct">–</div>
@@ -55,12 +56,12 @@
 
         <div class="limits-section">
           <div class="limits-title-row">
-            <span class="limits-title">Weekly limits</span>
-            <span class="limits-plan" id="lim-week-reset">重置於 Sat 11:00</span>
+            <span class="limits-title" data-i18n="weekly_limits">Weekly limits</span>
+            <span class="limits-plan" id="lim-week-reset">–</span>
           </div>
           <div class="limits-row">
             <div class="limits-meta">
-              <span class="limits-sub">All models</span>
+              <span class="limits-sub" data-i18n="all_models">All models</span>
               <span class="limits-reset" id="lim-week-msgs">–</span>
             </div>
             <div class="limits-pct" id="lim-week-pct">–</div>
@@ -75,7 +76,7 @@
 
         <div class="limits-section">
           <div class="limits-title-row">
-            <span class="limits-title">今日費用</span>
+            <span class="limits-title" data-i18n="today_cost">今日費用</span>
           </div>
           <div class="limits-row">
             <div class="limits-meta">
@@ -87,16 +88,16 @@
         </div>
       </div>
 
-      <!-- Session Panel (token details) -->
+      <!-- Session Panel -->
       <div class="panel" id="panel-session">
         <div class="cost-card">
           <div>
-            <div class="cost-label">Session Cost</div>
+            <div class="cost-label" data-i18n="session_cost">Session Cost</div>
             <div class="cost-main" id="s-cost">–</div>
-            <div class="cost-msgs" id="s-msgs">0 訊息</div>
+            <div class="cost-msgs" id="s-msgs">–</div>
           </div>
           <div class="cost-detail">
-            <div class="cost-label">Total Tokens</div>
+            <div class="cost-label" data-i18n="total_tokens">Total Tokens</div>
             <div class="cost-msgs" id="s-total-tokens">–</div>
           </div>
         </div>
@@ -112,12 +113,12 @@
       <div class="panel" id="panel-month">
         <div class="cost-card">
           <div>
-            <div class="cost-label">本月費用</div>
+            <div class="cost-label" data-i18n="month_cost">本月費用</div>
             <div class="cost-main" id="m-cost">–</div>
-            <div class="cost-msgs" id="m-msgs">0 訊息</div>
+            <div class="cost-msgs" id="m-msgs">–</div>
           </div>
           <div class="cost-detail">
-            <div class="cost-label">Total Tokens</div>
+            <div class="cost-label" data-i18n="total_tokens">Total Tokens</div>
             <div class="cost-msgs" id="m-total-tokens">–</div>
           </div>
         </div>
@@ -132,6 +133,7 @@
     </div><!-- /content -->
   </div><!-- /app -->
 
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
