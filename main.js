@@ -117,15 +117,6 @@ function startWatcher() {
   }
 
   setInterval(sendUpdate, 30_000);
-
-  // Refresh API usage data every 3 minutes (cache TTL is 2 min)
-  setInterval(() => {
-    try {
-      const { clearCache } = require('./src/usage-api');
-      clearCache();
-    } catch (_) {}
-    sendUpdate();
-  }, 3 * 60 * 1000);
 }
 
 app.whenReady().then(() => {

@@ -10,8 +10,8 @@ const fs = require('fs');
 let _cache = null;
 let _cacheTime = 0;
 let _rateLimitedUntil = 0;        // 429 退避：此時間前不再呼叫 API
-const CACHE_TTL_MS   = 5 * 60 * 1000;  // 5 分鐘正常快取
-const RATE_LIMIT_BACKOFF_MS = 10 * 60 * 1000; // 429 後等 10 分鐘
+const CACHE_TTL_MS          = 10 * 60 * 1000; // 10 分鐘快取，最多 6 次/小時
+const RATE_LIMIT_BACKOFF_MS = 15 * 60 * 1000; // 429 後等 15 分鐘再試
 
 function readKeychainAsync() {
   return new Promise((resolve) => {
