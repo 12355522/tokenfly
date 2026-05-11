@@ -223,8 +223,15 @@ function getCurrentSessionStats() {
 
 function getAllStats() {
   const files = getAllSessionFiles();
+  const cutoff = Date.now() - 32 * 24 * 60 * 60 * 1000; // 只讀近 32 天的檔案
+
   const allRecords = [];
-  for (const f of files) { allRecords.push(...parseSessionFile(f)); }
+  for (const f of files) {
+    try {
+      if (fs.statSync(f).mtimeMs < cutoff) continue; // 跳過超過 32 天未修改的檔案
+    } catch (_) { continue; }
+    allRecords.push(...parseSessionFile(f));
+  }
   allRecords.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
   const todayRecords = allRecords.filter(r => isToday(r.timestamp));
@@ -235,7 +242,6 @@ function getAllStats() {
     today: aggregateRecords(todayRecords),
     week: aggregateRecords(weekRecords),
     month: aggregateRecords(monthRecords),
-    total: aggregateRecords(allRecords),
   };
 }
 

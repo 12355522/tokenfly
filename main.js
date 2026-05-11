@@ -5,6 +5,14 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 
+// 防止未捕捉的錯誤讓 Electron 主程序崩潰
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason);
+});
+
 let win = null;
 let tray = null;
 let watcher = null;

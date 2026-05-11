@@ -1,6 +1,6 @@
 'use strict';
 
-const { execSync } = require('child_process');
+const { exec } = require('child_process');
 const https = require('https');
 const os = require('os');
 const path = require('path');
@@ -13,43 +13,36 @@ let _rateLimitedUntil = 0;        // 429 退避：此時間前不再呼叫 API
 const CACHE_TTL_MS   = 5 * 60 * 1000;  // 5 分鐘正常快取
 const RATE_LIMIT_BACKOFF_MS = 10 * 60 * 1000; // 429 後等 10 分鐘
 
-function getOAuthToken() {
-  // 1. Try macOS Keychain (primary)
-  try {
-    const raw = execSync(
+function readKeychainAsync() {
+  return new Promise((resolve) => {
+    exec(
       'security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null',
-      { encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'ignore'] }
+      { timeout: 4000 },
+      (err, stdout) => {
+        if (err || !stdout.trim()) { resolve(null); return; }
+        try { resolve(JSON.parse(stdout.trim())); } catch (_) { resolve(null); }
+      }
     );
-    const data = JSON.parse(raw.trim());
-    const oauth = data.claudeAiOauth;
-    if (oauth?.accessToken) {
-      if (!oauth.expiresAt || Date.now() < oauth.expiresAt) {
-        return { token: oauth.accessToken, refreshToken: oauth.refreshToken };
-      }
-      // Expired — return refresh token so caller can try to refresh
-      return { token: null, refreshToken: oauth.refreshToken, expired: true };
-    }
-  } catch (_) {}
+  });
+}
 
-  // 2. Try ~/.claude/.credentials.json (file-based fallback)
-  try {
-    const credPath = path.join(os.homedir(), '.claude', '.credentials.json');
-    const raw = fs.readFileSync(credPath, 'utf8');
-    const data = JSON.parse(raw);
-    const oauth = data.claudeAiOauth;
-    if (oauth?.accessToken) {
-      if (!oauth.expiresAt || Date.now() < oauth.expiresAt) {
-        return { token: oauth.accessToken, refreshToken: oauth.refreshToken };
-      }
-    }
-  } catch (_) {}
-
-  // 3. Environment variable
-  if (process.env.CLAUDE_CODE_OAUTH_TOKEN) {
-    return { token: process.env.CLAUDE_CODE_OAUTH_TOKEN };
+async function getOAuthToken() {
+  // 1. macOS Keychain（非阻塞）
+  const kc = await readKeychainAsync();
+  if (kc?.claudeAiOauth?.accessToken) {
+    const o = kc.claudeAiOauth;
+    if (!o.expiresAt || Date.now() < o.expiresAt) return o.accessToken;
   }
 
-  return null;
+  // 2. ~/.claude/.credentials.json
+  try {
+    const raw = fs.readFileSync(path.join(os.homedir(), '.claude', '.credentials.json'), 'utf8');
+    const o = JSON.parse(raw)?.claudeAiOauth;
+    if (o?.accessToken && (!o.expiresAt || Date.now() < o.expiresAt)) return o.accessToken;
+  } catch (_) {}
+
+  // 3. 環境變數
+  return process.env.CLAUDE_CODE_OAUTH_TOKEN || null;
 }
 
 function httpsGet(token) {
@@ -109,11 +102,11 @@ async function fetchUsageData() {
     return _cache;
   }
 
-  const auth = getOAuthToken();
-  if (!auth?.token) return _cache;
+  const token = await getOAuthToken();
+  if (!token) return _cache;
 
   try {
-    const raw = await httpsGet(auth.token);
+    const raw = await httpsGet(token);
 
     const result = {
       session: null,

@@ -101,10 +101,9 @@ function renderStats(data) {
       setBar('lim-session-bar', pct, 'blue');
       if (sessionApiReset) setText('lim-session-duration', `${t('reset')}: ${sessionApiReset}`);
     } else if (session) {
-      const todayMsgs = today?.messages || session.messages;
-      const sessionBar = todayMsgs > 0 ? Math.round((session.messages / todayMsgs) * 100) : 50;
-      setText('lim-session-pct', `${session.messages} ${t('msgs')}`);
-      setBar('lim-session-bar', sessionBar, 'blue');
+      // 沒有 API 資料時只顯示訊息數，不顯示會誤判的假百分比
+      setText('lim-session-pct', `${session.messages} msg`);
+      setBar('lim-session-bar', 0, 'blue');
     }
   }
 

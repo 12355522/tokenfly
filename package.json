@@ -19,6 +19,7 @@
   "build": {
     "appId": "com.gevsi.tokenfly",
     "productName": "Tokenfly",
+    "compression": "maximum",
     "files": [
       "main.js",
       "preload.js",
@@ -28,6 +29,9 @@
     ],
     "mac": {
       "category": "public.app-category.developer-tools",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
       "target": [
         {
           "target": "dmg",
